@@ -35,16 +35,6 @@ export default function App() {
     }
   };
 
-  // ฟังก์ชันบันทึกลง AsyncStorage
-  const saveNotes = async (newNotes) => {
-    // TODO: ให้นักศึกษาเขียนโค้ดสำหรับเซฟข้อมูล
-    try {
-      await AsyncStorage.setItem('@notes', JSON.stringify(newNotes));
-    } catch (e) {
-      console.error('Save Error', e);
-    }
-  };
-
   // ฟังก์ชันเพิ่มโน้ตใหม่
   const handleAddNote = () => {
     // TODO: ให้นักศึกษาเขียนโค้ดสำหรับเพิ่มบันทึก
@@ -60,6 +50,17 @@ export default function App() {
     setCategory('Personal'); // รีเซ็ตหมวดหมู่เป็นค่าเริ่มต้น
   };
 
+  // ฟังก์ชันบันทึกลง AsyncStorage
+  const saveNotes = async (newNotes) => {
+    // TODO: ให้นักศึกษาเขียนโค้ดสำหรับเซฟข้อมูล
+    try {
+      await AsyncStorage.setItem('@notes', JSON.stringify(newNotes));
+    } catch (e) {
+      console.error('Save Error', e);
+    }
+  };
+
+
   // ฟังก์ชันลบบันทึก
   const handleDelete = (id) => {
     // TODO: ให้นักศึกษาเขียนโค้ดสำหรับลบบันทึก
@@ -74,6 +75,7 @@ export default function App() {
     <View style={styles.container}>
       <Text style={styles.heading}>📒 Notes Keeper</Text>
 
+    {/* Input New Note */}
       <TextInput
         style={styles.input}
         placeholder="Enter note title..."
@@ -82,6 +84,7 @@ export default function App() {
         onChangeText={setTitle}
       />
 
+      {/* Category */}
       <View style={styles.pickerContainer}>
         <Text style={styles.label}>Category:</Text>
         <Picker

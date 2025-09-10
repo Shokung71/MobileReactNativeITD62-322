@@ -12,15 +12,7 @@ export default function App() {
   useEffect(() => {
     loadTodos();
   }, []);
-
-  const saveTodos = async (newTodos) => {
-    try {
-      await AsyncStorage.setItem('@todos', JSON.stringify(newTodos));
-    } catch (e) {
-      console.error('Save Error', e);
-    }
-  };
-
+  
   const loadTodos = async () => {
     try {
       const data = await AsyncStorage.getItem('@todos');
@@ -31,6 +23,15 @@ export default function App() {
       console.error('Load Error', e);
     }
   };
+
+  const saveTodos = async (newTodos) => {
+    try {
+      await AsyncStorage.setItem('@todos', JSON.stringify(newTodos));
+    } catch (e) {
+      console.error('Save Error', e);
+    }
+  };
+
 
   const handleAdd = () => {
     if (text.trim() === '') {
@@ -49,6 +50,7 @@ export default function App() {
     setEditingIndex(index);
   };
 
+  // Edit existing todo
   const handleUpdate = () => {
     if (editingIndex === null) return;
 
@@ -66,10 +68,12 @@ export default function App() {
     saveTodos(updated);
   };
 
+  // UI Rendering
   return (
     <View style={styles.container}>
       <Text style={styles.title}>To-Do List</Text>
 
+      {/* Input New To-Do List */}
       <TextInput
         style={styles.input}
         placeholder="พิมพ์รายการ"
@@ -77,6 +81,7 @@ export default function App() {
         onChangeText={setText}
       />
 
+      {/* ตรวจสถานะว่าสถานะจะ Update หรือไม่ */}
       {editingIndex === null ? (
         <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>เพิ่ม</Text>
@@ -87,6 +92,7 @@ export default function App() {
         </TouchableOpacity>
       )}
 
+
       <FlatList
         data={todos}
         keyExtractor={(item) => item.id}
@@ -94,6 +100,7 @@ export default function App() {
           <View style={styles.todoItem}>
             <Text>{item.title}</Text>
             <View style={styles.actions}>
+              {/* handleEdit จะไปเปบี่ยนแปลงค่า editingIndex ให้เป็น ตัว index ของตัวที่ต้องการจะให้ Edit แล้วจะทำให้ปุ่ม "เพิ่ม" ให้กลายเป็นปุ่ม "อัปเดต"*/}
               <TouchableOpacity onPress={() => handleEdit(item, index)}>
                 <Text style={styles.edit}>แก้ไข</Text>
               </TouchableOpacity>

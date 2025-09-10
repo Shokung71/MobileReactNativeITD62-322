@@ -6,6 +6,9 @@ function ProductList({ navigation }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+
+
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
