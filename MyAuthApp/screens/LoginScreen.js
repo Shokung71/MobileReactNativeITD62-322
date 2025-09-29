@@ -2,21 +2,48 @@ import React, { useState } from 'react';
 import { View, TextInput, SafeAreaView, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { Button } from 'react-native';
+import UserProfile from './UserProfile';
 
 export default function LoginScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const navigation = useNavigation();
+    const navigation = useNavigation(); // ใช้สำหรับการนำทางไปยังหน้าอื่น
+
+    const handleUserList = () => {
+        navigation.navigate('UserList');
+    }
 
     const handleLogin = () => {
-        if (username && password) {
-            // alert('Login pressed: ' + username);
-            navigation.navigate('UserProfile');
-        } else {
-            alert('Please enter username and password');
-        }
-    }
+        let url = `http://localhost:3001/users?username=${username}&password=${password}`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    navigation.navigate('User Profile');
+                }
+            });
+    };
+
+    // const handleLogin = () => {
+    //     // if (username && password) {
+    //     // alert('Login pressed: ' + username);
+    //     // navigation.navigate('User Profile');
+    //     let url = `http://localhost:3001/users?username=${username}&password=${password}`;
+    //     fetch(url)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if (data.length > 0) {
+    //                 navigation.navigate('User Profile');
+    //             } else {
+    //                 alert('Please enter username and password');
+    //             }
+    //         });
+    //     // } else {
+    //     //     alert('Please enter username and password');
+    //     // }
+    // }
 
     return (
         <SafeAreaView style={styles.root}>
@@ -35,17 +62,22 @@ export default function LoginScreen() {
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry
+                    secureTextEntry     // จะเป็นการซ่อน password เช่น ******
                     style={styles.input}
                 />
 
-                <TouchableOpacity
+                <Button style={[styles.button]} title="Login" onPress={handleLogin} />
+
+                <Button style={[styles.button]} title="UserList" onPress={handleUserList} />
+
+
+                {/* <TouchableOpacity
                     onPress={handleLogin}
                     // disabled={loading}
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>บันทึก</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text style={styles.note}>กรุณากรอก username และ password</Text>
 
             </View>

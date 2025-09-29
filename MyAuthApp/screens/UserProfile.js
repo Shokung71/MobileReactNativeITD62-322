@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, SafeAreaView, StyleSheet, Button, TouchableOpacity, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function UserProfile() {
@@ -8,13 +9,67 @@ export default function UserProfile() {
     const [email, setEmail] = useState('');
     const [fullname, setFullname] = useState('');
 
+    const navigation = useNavigation(); // ใช้สำหรับการนำทางไปยังหน้าอื่นF
+
+    // const goList = () => {
+    //     navigation.navigate('UserList');
+    // }
+
     const handleSearch = () => {
-        alert('Search pressed: ' + username);
+        // alert('Search pressed: ' + username);
+        fetch(`http://localhost:3001/users?username=${username}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    let u = data[0];
+                    setPassword(u.password);
+                    setId(u.id);
+                    setEmail(u.email);
+                    setFullname(u.fullname);
+                    alert('User found: ' + u.username);
+                } else {
+                    alert('No user found');
+                }
+            });
     }
+
+    const handleRegister = () => {
+        fetch('http://localhost:3001/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, email, fullname })
+        })
+            .then(res => res.json())
+            .then(data => alert('User created: ' + data.username));
+    };
+
+    const [id, setId] = useState(null);
+
+    const handleUpdate = () => {
+        if (!id) return alert('Search first!');
+        fetch(`http://localhost:3001/users/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, email, fullname })
+        })
+            .then(() => alert('User updated!'));
+    };
 
     return (
         <SafeAreaView style={styles.root}>
-            <View style={styles.card}>
+            <View style={{ padding: 20 }}>
+                <TextInput placeholder="Username" value={username} onChangeText={setUsername} style={{ borderWidth: 1, marginBottom: 10, padding: 8 }} />
+                <TextInput placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} style={{ borderWidth: 1, marginBottom: 10, padding: 8 }} />
+                <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={{ borderWidth: 1, marginBottom: 10, padding: 8 }} />
+                <TextInput placeholder="Full Name" value={fullname} onChangeText={setFullname} style={{ borderWidth: 1, marginBottom: 10, padding: 8 }} />
+
+                <Button title="Search" style={styles.touchableButton} onPress={handleSearch} />
+                <Button title="Register" style={styles.touchableButton} onPress={handleRegister} />
+                <Button title="Update" style={styles.touchableButton} onPress={handleUpdate} />
+
+                {/* <Button title="List" style={styles.touchableButton} onPress={goList} /> */}
+            </View>
+            {/* <View style={styles.card}>
                 <Text style={styles.title}>ลงทะเบียนผู้ใช้ / แก้ไขโปรไฟล์</Text>
 
                 <View style={styles.searchRow}>
@@ -31,20 +86,6 @@ export default function UserProfile() {
                         <Text style={styles.searchButtonText}>ค้นหา</Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* <TextInput
-                    placeholder="ค้นหาด้วยชื่อเต็ม / username / email"
-                    value={username}
-                    onChangeText={setUsername}
-                    style={styles.input}
-                />
-
-                <TouchableOpacity
-                    style={styles.touchableButton}
-                    onPress={handleSearch}
-                >
-                    <Text style={styles.buttonText}>ค้นหา</Text>
-                </TouchableOpacity> */}
 
                 <Text style={styles.TitleInputText}>Username</Text>
                 <TextInput
@@ -92,9 +133,9 @@ export default function UserProfile() {
                     onPress={() => alert('Clear form pressed')}
                 >
                     <Text style={styles.linkButtonText}>ล้างแบบฟอร์ม</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-            </View>
+            {/* </View> */}
         </SafeAreaView >
     );
 }
