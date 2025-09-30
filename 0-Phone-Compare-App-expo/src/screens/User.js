@@ -360,12 +360,12 @@ export default function UserScreen({ navigation }) {
                   onChangeText={(t) => { editPasswordRef.current = t; }}
                   placeholder="รหัสผ่านใหม่"
                   placeholderTextColor="#9ca3af"
-                  secureTextEntry
+                  secureTextEntry={true}
                   autoCorrect={false}
                   autoCapitalize="none"
                   autoComplete="off"
                   disableFullscreenUI
-                  keyboardType={Platform.OS === 'android' ? 'visible-password' : 'default'}
+                  keyboardType="default"
                   style={{
                     borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, padding: 12, marginBottom: 16
                   }}
@@ -430,13 +430,13 @@ export default function UserScreen({ navigation }) {
             onChangeText={(t) => { passwordRef.current = t; }}
             placeholder="password"
             placeholderTextColor="#9ca3af"
-            secureTextEntry
+            secureTextEntry={true}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="off"
             disableFullscreenUI
             importantForAutofill="no"
-            keyboardType={Platform.OS === 'android' ? 'visible-password' : 'default'}
+            keyboardType="default"
             style={{
               borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, padding: 12, marginBottom: 16
             }}

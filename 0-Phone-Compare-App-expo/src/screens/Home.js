@@ -164,7 +164,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
-      <AppHeader user={user} onPressProfile={() => navigation.navigate('User')} />
+      <AppHeader user={user} onPressProfile={() => navigation.navigate('ผู้ใช้')} />
 
       {/* Content */}
       <View style={styles.content}>
