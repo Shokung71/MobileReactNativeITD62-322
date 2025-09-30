@@ -9,7 +9,7 @@ import { apiGet } from '../api';
 const SEGMENTS = [
   { key: 'budget', label: 'ประหยัด' },
   { key: 'midrange', label: 'ระดับกลาง' },
-  { key: 'flagship', label: 'เรือธง' },
+  { key: 'flagship', label: 'ระดับท็อป' },
 ];
 
 // Header Component

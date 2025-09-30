@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     Modal,
     ScrollView,
-    DeviceEventEmitter, // ✅ เพิ่มตรงนี้
+    DeviceEventEmitter,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,7 +28,7 @@ const SPEC_FIELDS = [
     { key: 'display_size', label: 'ขนาดหน้าจอ' },
     { key: 'display_type', label: 'ประเภทจอ' },
     { key: 'ram', label: 'RAM' },
-    { key: 'rom', label: 'ROM (วางขายจริง)' },
+    { key: 'rom', label: 'ROM' },
     { key: 'battery', label: 'แบตเตอรี่' },
 ];
 
@@ -81,11 +81,11 @@ function AdminProducts() {
 
     const [segSort, setSegSort] = useState('asc'); // 'asc' = budget→midrange→flagship, 'desc' = flagship→midrange→budget
 
-    // Modal เพิ่มสินค้า
+    // Modal เพิ่มสมาร์ทโฟน
     const [addVisible, setAddVisible] = useState(false);
     const [addForm, setAddForm] = useState(createEmptyForm());
 
-    // Modal แก้ไขสินค้า
+    // Modal แก้ไขสมาร์ทโฟน
     const [editVisible, setEditVisible] = useState(false);
     const [editId, setEditId] = useState(null);
     const [editForm, setEditForm] = useState(createEmptyForm());
@@ -117,7 +117,8 @@ function AdminProducts() {
         const bg =
             type === 'primary' ? '#111' :
                 type === 'danger' ? '#ef4444' :
-                    type === 'secondary' ? '#f3f4f6' : '#e5e7eb';
+                    type === 'secondary' ? '#f3f4f6' :
+                        type === 'safe' ? '#57c449ff' : '#e5e7eb';
         const color = type === 'primary' ? '#fff' : '#111';
         return (
             <TouchableOpacity
@@ -143,9 +144,9 @@ function AdminProducts() {
     };
 
     const saveAdd = async () => {
-        if (!addForm.product_name) return Alert.alert('กรอกชื่อสินค้า');
+        if (!addForm.product_name) return Alert.alert('กรอกชื่อสมาร์ทโฟน');
         await apiPost('/products', addForm);
-        DeviceEventEmitter.emit('PRODUCTS_UPDATED'); // ✅ แจ้งหน้าอื่นให้รีโหลด
+        DeviceEventEmitter.emit('PRODUCTS_UPDATED');
         setAddVisible(false);
         setAddForm(createEmptyForm());
         load();
@@ -173,9 +174,9 @@ function AdminProducts() {
     };
 
     const saveEdit = async () => {
-        if (!editForm.product_name) return Alert.alert('กรอกชื่อสินค้า');
+        if (!editForm.product_name) return Alert.alert('กรอกชื่อสมาร์ทโฟน');
         await apiPatch(`/products/${editId}`, editForm);
-        DeviceEventEmitter.emit('PRODUCTS_UPDATED'); // ✅ แจ้งหน้าอื่นให้รีโหลด
+        DeviceEventEmitter.emit('PRODUCTS_UPDATED');
         setEditVisible(false);
         setEditId(null);
         setEditForm(createEmptyForm());
@@ -190,7 +191,7 @@ function AdminProducts() {
                 style: 'destructive',
                 onPress: async () => {
                     await apiDel(`/products/${item.id}`);
-                    DeviceEventEmitter.emit('PRODUCTS_UPDATED'); // ✅ แจ้งหน้าอื่นให้รีโหลด
+                    DeviceEventEmitter.emit('PRODUCTS_UPDATED');
                     load();
                 }
             }
@@ -201,6 +202,7 @@ function AdminProducts() {
         const q = productQuery.trim().toLowerCase();
         if (!q) return list;
         return list.filter(i =>
+            // i.product_name?.toLowerCase().includes(q)
             i.product_name?.toLowerCase().includes(q) ||
             i.segment?.toLowerCase().includes(q)
         );
@@ -221,19 +223,19 @@ function AdminProducts() {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff', paddingHorizontal: 16 }}>
-            {/* แถวปุ่มเพิ่มสินค้า + ช่องค้นหา */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, marginBottom: 6 }}>
-                <SmallBtn title="เพิ่มสินค้า" onPress={openAdd} />
+            {/* แถวปุ่มเพิ่มสมาร์ทโฟน + ช่องค้นหา */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 0, marginBottom: 8 }}>
                 <TextInput
-                    placeholder="ค้นหา: ชื่อสินค้า หรือช่วงราคา (budget/midrange/flagship)"
+                    placeholder="ค้นหาชื่อสมาร์ทโฟนค้นหา หรือ ระดับสมาร์ทโฟน"
                     value={productQuery}
                     onChangeText={setProductQuery}
                     style={{
                         flex: 1,
                         borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8,
-                        padding: 10, marginLeft: 10, backgroundColor: '#fff'
+                        padding: 10, marginRight: 10, backgroundColor: '#fff'
                     }}
                 />
+                <SmallBtn title="เพิ่ม" onPress={openAdd} type="safe" />
             </View>
 
             {/* ปุ่มเรียง: ย้ายลงบรรทัดใหม่ */}
@@ -245,7 +247,7 @@ function AdminProducts() {
                 />
             </View>
 
-            {/* รายการสินค้า */}
+            {/* รายการสมาร์ทโฟน */}
             <FlatList
                 data={sorted}
                 keyExtractor={(i) => String(i.id)}
@@ -278,7 +280,7 @@ function AdminProducts() {
                     <View style={{ backgroundColor: '#fff', borderRadius: 12, paddingTop: 12, paddingHorizontal: 16, paddingBottom: 8, maxHeight: '92%' }}>
                         {/* Header + ปุ่มกากบาท */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                            <Text style={{ flex: 1, fontSize: 18, fontWeight: '700' }}>เพิ่มสินค้า</Text>
+                            <Text style={{ flex: 1, fontSize: 18, fontWeight: '700' }}>เพิ่มสมาร์ทโฟน</Text>
                             <TouchableOpacity onPress={() => setAddVisible(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                                 <Text style={{ fontSize: 22 }}>×</Text>
                             </TouchableOpacity>
@@ -286,7 +288,7 @@ function AdminProducts() {
 
                         <ScrollView>
                             <TextInput
-                                placeholder="ชื่อสินค้า"
+                                placeholder="ชื่อสมาร์ทโฟน"
                                 value={addForm.product_name}
                                 onChangeText={(t) => setAddForm(p => ({ ...p, product_name: t }))}
                                 style={{ borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, padding: 10, marginBottom: 10, backgroundColor: '#fff' }}
@@ -322,8 +324,8 @@ function AdminProducts() {
                             ) : null}
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginTop: 4, marginBottom: 8 }}>
-                                <SmallBtn title="เลือกรูปภาพ" onPress={pickImageAdd} type="secondary" style={{ marginRight: 8, marginBottom: 8 }} />
-                                <SmallBtn title="เพิ่มสินค้า" onPress={saveAdd} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="เลือกรูปภาพ" onPress={pickImageAdd} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="เพิ่มสมาร์ทโฟน" onPress={saveAdd} type="safe" style={{ marginRight: 8, marginBottom: 8 }} />
                                 <SmallBtn title="ล้างฟอร์ม" onPress={clearAddForm} type="secondary" style={{ marginBottom: 8 }} />
                             </View>
                         </ScrollView>
@@ -342,7 +344,7 @@ function AdminProducts() {
                     <View style={{ backgroundColor: '#fff', borderRadius: 12, paddingTop: 12, paddingHorizontal: 16, paddingBottom: 8, maxHeight: '92%' }}>
                         {/* Header + ปุ่มกากบาท */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                            <Text style={{ flex: 1, fontSize: 18, fontWeight: '700' }}>แก้ไขสินค้า</Text>
+                            <Text style={{ flex: 1, fontSize: 18, fontWeight: '700' }}>แก้ไขสมาร์ทโฟน</Text>
                             <TouchableOpacity onPress={() => setEditVisible(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                                 <Text style={{ fontSize: 22 }}>×</Text>
                             </TouchableOpacity>
@@ -350,7 +352,7 @@ function AdminProducts() {
 
                         <ScrollView>
                             <TextInput
-                                placeholder="ชื่อสินค้า"
+                                placeholder="ชื่อสมาร์ทโฟน"
                                 value={editForm.product_name}
                                 onChangeText={(t) => setEditForm(p => ({ ...p, product_name: t }))}
                                 style={{ borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, padding: 10, marginBottom: 10, backgroundColor: '#fff' }}
@@ -395,8 +397,8 @@ function AdminProducts() {
                             ) : null}
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginTop: 4, marginBottom: 8 }}>
-                                <SmallBtn title="เลือกรูปภาพ" onPress={pickImageEdit} type="secondary" style={{ marginRight: 8, marginBottom: 8 }} />
-                                <SmallBtn title="บันทึกการแก้ไข" onPress={saveEdit} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="เลือกรูปภาพ" onPress={pickImageEdit} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="บันทึกการแก้ไข" onPress={saveEdit} type="safe" style={{ marginRight: 8, marginBottom: 8 }} />
                                 <SmallBtn title="ยกเลิก" onPress={() => setEditVisible(false)} type="secondary" style={{ marginBottom: 8 }} />
                             </View>
                         </ScrollView>
@@ -443,7 +445,8 @@ function AdminUsers() {
         const bg =
             type === 'primary' ? '#111' :
                 type === 'danger' ? '#ef4444' :
-                    type === 'secondary' ? '#f3f4f6' : '#e5e7eb';
+                    type === 'secondary' ? '#f3f4f6' :
+                        type === 'safe' ? '#57c449ff' : '#e5e7eb';
         const color = type === 'primary' ? '#fff' : '#111';
         return (
             <TouchableOpacity
@@ -494,7 +497,6 @@ function AdminUsers() {
         }
     };
 
-    // ✅ UPDATED: ป้องกัน username ซ้ำตอนเพิ่มผู้ใช้ (ไม่สนตัวพิมพ์เล็ก-ใหญ่)
     const saveAdd = async () => {
         const username = (addForm.username || '').trim();
         const password = addForm.password || '';
@@ -541,7 +543,6 @@ function AdminUsers() {
         }
     };
 
-    // ✅ UPDATED: ป้องกัน username ซ้ำตอนแก้ไข (ยกเว้น user เดิมเอง)
     const saveEdit = async () => {
         const username = (editForm.username || '').trim();
         if (!username) return Alert.alert('กรอก username');
@@ -584,7 +585,7 @@ function AdminUsers() {
     // คัดกรองตามคำค้น
     const filtered = list.filter(u => u.username?.toLowerCase().includes((query || '').toLowerCase()));
 
-    // 🔽 จัดเรียงตามบทบาท (admin ก่อน หรือ user ก่อน)
+    // จัดเรียงตามบทบาท (admin ก่อน หรือ user ก่อน)
     const sortedUsers = useMemo(() => {
         const rank = roleSort === 'admin-first' ? { admin: 0, user: 1 } : { user: 0, admin: 1 };
         return [...filtered].sort((a, b) => {
@@ -596,22 +597,23 @@ function AdminUsers() {
     }, [filtered, roleSort]);
 
     return (
-        <View style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
-            {/* แถวปุ่มเพิ่มผู้ใช้ + ช่องค้นหา (เหลือแค่นี้) */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                <SmallBtn title="เพิ่มผู้ใช้" onPress={openAdd} />
+
+        <View style={{ flex: 1, backgroundColor: '#fff', paddingHorizontal: 16 }}>
+            {/* แถวปุ่มเพิ่มสมาร์ทโฟน + ช่องค้นหา */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 0, marginBottom: 8 }}>
                 <TextInput
                     placeholder="ค้นหา username"
                     value={query}
                     onChangeText={setQuery}
-                    style={{ flex: 1, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, padding: 10, marginLeft: 10, backgroundColor: '#fff' }}
+                    style={{ flex: 1, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, padding: 10, marginRight: 10, backgroundColor: '#fff' }}
                 />
+                <SmallBtn title="เพิ่ม" onPress={openAdd} type='safe'/>
             </View>
 
-            {/* ▼▼ ปุ่มเรียงบทบาท: ย้ายลงบรรทัดใหม่ ▼▼ */}
+            {/* ปุ่มเรียงบทบาท: ย้ายลงบรรทัดใหม่ */}
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                 <SmallBtn
-                    title={roleSort === 'admin-first' ? 'เรียง: admin ไป user' : 'เรียง: user ไป admin'}
+                    title={roleSort === 'admin-first' ? 'เรียงจาก: admin ไป user' : 'เรียงจาก: user ไป admin'}
                     onPress={() => setRoleSort(s => (s === 'admin-first' ? 'user-first' : 'admin-first'))}
                     type="secondary"
                 />
@@ -677,8 +679,8 @@ function AdminUsers() {
                             ) : null}
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginTop: 4, marginBottom: 8 }}>
-                                <SmallBtn title="เลือกรูปภาพ" onPress={pickProfileAdd} type="secondary" style={{ marginRight: 8, marginBottom: 8 }} />
-                                <SmallBtn title="บันทึก" onPress={saveAdd} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="เลือกรูปภาพ" onPress={pickProfileAdd} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="บันทึก" onPress={saveAdd} type="safe" style={{ marginRight: 8, marginBottom: 8 }} />
                                 <SmallBtn title="ล้างฟอร์ม" onPress={clearAdd} type="secondary" style={{ marginBottom: 8 }} />
                             </View>
                         </ScrollView>
@@ -725,8 +727,8 @@ function AdminUsers() {
                             ) : null}
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginTop: 4, marginBottom: 8 }}>
-                                <SmallBtn title="เลือกรูปภาพ" onPress={pickProfileEdit} type="secondary" style={{ marginRight: 8, marginBottom: 8 }} />
-                                <SmallBtn title="บันทึกการแก้ไข" onPress={saveEdit} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="เลือกรูปภาพ" onPress={pickProfileEdit} type="primary" style={{ marginRight: 8, marginBottom: 8 }} />
+                                <SmallBtn title="บันทึกการแก้ไข" onPress={saveEdit} type="safe" style={{ marginRight: 8, marginBottom: 8 }} />
                                 <SmallBtn title="ยกเลิก" onPress={() => setEditVisible(false)} type="secondary" style={{ marginBottom: 8 }} />
                             </View>
                         </ScrollView>

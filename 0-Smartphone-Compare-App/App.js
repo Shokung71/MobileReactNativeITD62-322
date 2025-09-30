@@ -22,11 +22,11 @@ function Tabs() {
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
           let name;
-          if (route.name === 'Home') {
+          if (route.name === 'หน้าแรก') {
             name = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Compare') {
+          } else if (route.name === 'เปรียบเทียบ') {
             name = focused ? 'swap-horizontal' : 'swap-horizontal-outline';
-          } else if (route.name === 'User') {
+          } else if (route.name === 'ผู้ใช้') {
             name = focused ? 'person' : 'person-outline';
           }
           return <Ionicons name={name} size={size} color={color} />;
@@ -35,9 +35,9 @@ function Tabs() {
         tabBarInactiveTintColor: '#9ca3af',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Compare" component={CompareScreen} />
-      <Tab.Screen name="User" component={UserScreen} />
+      <Tab.Screen name="หน้าแรก" component={HomeScreen} />
+      <Tab.Screen name="เปรียบเทียบ" component={CompareScreen} />
+      <Tab.Screen name="ผู้ใช้" component={UserScreen} />
     </Tab.Navigator>
   );
 }

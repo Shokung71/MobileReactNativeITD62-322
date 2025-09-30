@@ -36,7 +36,8 @@ export default function UserScreen({ navigation }) {
     if (users?.length) {
       await AsyncStorage.setItem('session_user', JSON.stringify(users[0]));
       setFormKey(k => k + 1); // clear inputs
-      refresh();
+      await refresh();        // อัปเดต me ให้เป็นสถานะล็อกอิน
+      navigation.navigate('หน้าแรก'); // เด้งไปหน้า Home
     } else {
       Alert.alert('เข้าสู่ระบบไม่สำเร็จ', 'username/password ไม่ถูกต้อง');
     }
@@ -44,7 +45,7 @@ export default function UserScreen({ navigation }) {
 
   const handleLogout = async () => { await AsyncStorage.removeItem('session_user'); refresh(); };
 
-  // ✅ ป้องกัน username ซ้ำตอนสมัครสมาชิก
+  // ป้องกัน username ซ้ำตอนสมัครสมาชิก
   const handleRegister = async () => {
     const rawUsername = usernameRef.current;
     const password = passwordRef.current;
@@ -110,7 +111,7 @@ export default function UserScreen({ navigation }) {
 
   const clearAvatar = () => setEditImgBase64(null);
 
-  // ✅ UPDATED: ป้องกันเปลี่ยน username ให้ซ้ำกับผู้ใช้อื่น (ยกเว้นของตัวเอง)
+  // ป้องกันเปลี่ยน username ให้ซ้ำกับผู้ใช้อื่น (ยกเว้นของตัวเอง)
   const saveEdit = async () => {
     if (!me) return;
     try {
@@ -447,7 +448,7 @@ export default function UserScreen({ navigation }) {
             <PrimaryButton3 title="เข้าสู่ระบบ" onPress={handleLogin} />
           )}
 
-          <TouchableOpacity onPress={() => Alert.alert('ลืมรหัสผ่าน', 'เดโม: โปรดติดต่อผู้ดูแลระบบ')} style={{ marginTop: 14, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => Alert.alert('ลืมรหัสผ่าน', 'Demo: โปรดติดต่อผู้ดูแลระบบ')} style={{ marginTop: 14, alignItems: 'center' }}>
             <Text style={{ color: '#2563eb', fontWeight: '700' }}>ลืมรหัสผ่าน?</Text>
           </TouchableOpacity>
 

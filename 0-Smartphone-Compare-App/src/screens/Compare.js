@@ -30,7 +30,7 @@ const animate = () => {
 const SEGMENTS = [
   { key: 'budget', label: 'ประหยัด' },
   { key: 'midrange', label: 'ระดับกลาง' },
-  { key: 'flagship', label: 'รุ๋นท็อป' },
+  { key: 'flagship', label: 'ระดับท็อป' },
   { key: 'all', label: 'ทั้งหมด' }, // << เพิ่มปุ่มใหม่
 ];
 
@@ -250,7 +250,7 @@ export default function CompareScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <View style={styles.topBar}>
-          <Text style={styles.title}>เปรียบเทียบสินค้า</Text>
+          <Text style={styles.title}>เปรียบเทียบสมาร์ทโฟน</Text>
           {A && B ? (
             <View style={styles.diffBadge}><Text style={styles.diffBadgeText}>แตกต่าง {diffCount} รายการ</Text></View>
           ) : null}
