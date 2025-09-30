@@ -1,5 +1,5 @@
 // ตั้งค่า BASE_URL ให้เป็น IP ของคอมพ์คุณในวงแลน (เวลาทดสอบบนมือถือจริงห้ามใช้ localhost)
-export const BASE_URL = 'http://172.16.41.168:3001';
+export const BASE_URL = 'http://192.168.0.8:3001';
 
 
 export async function apiGet(path) {

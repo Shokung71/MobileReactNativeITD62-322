@@ -26,10 +26,12 @@ const animate = () => {
   if (IS_IOS) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 };
 
+// เพิ่มตัวเลือก "all" สำหรับแสดงทั้งหมด
 const SEGMENTS = [
   { key: 'budget', label: 'ประหยัด' },
   { key: 'midrange', label: 'ระดับกลาง' },
-  { key: 'flagship', label: 'เรือธง' },
+  { key: 'flagship', label: 'รุ๋นท็อป' },
+  { key: 'all', label: 'ทั้งหมด' }, // << เพิ่มปุ่มใหม่
 ];
 
 const SPEC_FIELDS = [
@@ -189,6 +191,7 @@ function SpecRow({ label, a, b, numeric }) {
 }
 
 export default function CompareScreen() {
+  // ตั้งค่าเริ่มต้นเป็น 'midrange' ตามเดิม
   const [segment, setSegment] = useState('midrange');
   const [data, setData] = useState([]);
   const [picked, setPicked] = useState([]);
@@ -196,7 +199,9 @@ export default function CompareScreen() {
   const [diffOnly, setDiffOnly] = useState(false);
 
   const load = async () => {
-    const list = await apiGet(`/products?segment=${segment}`);
+    // ถ้าเลือก "แสดงทั้งหมด" ให้ดึง /products ไม่ต้องส่ง segment
+    const url = segment === 'all' ? '/products' : `/products?segment=${segment}`;
+    const list = await apiGet(url);
     animate(); // iOS only
     setData(list || []);
     setPicked([]);
@@ -263,7 +268,10 @@ export default function CompareScreen() {
           />
         </View>
 
-        <Text style={styles.helperText}>เลือก 2 รุ่นในช่วงระดับเดียวกัน</Text>
+        <Text style={styles.helperText}>
+          {segment === 'all' ? 'เลือก 2 รุ่นจากทุกรุ่น' : 'เลือก 2 รุ่นในช่วงระดับเดียวกัน'}
+        </Text>
+
         <FlatList
           data={filtered}
           keyExtractor={(i) => String(i.id)}
@@ -300,11 +308,11 @@ const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 32 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   title: { fontSize: 20, fontWeight: '800', color: '#0f172a' },
-  diffBadge: { backgroundColor: '#111827', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 999 },
-  diffBadgeText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  diffBadge: { backgroundColor: '#ffffffff',borderColor: '#aaaaaaff', borderWidth: 2, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 999 },
+  diffBadgeText: { color: '#111827', fontSize: 12, fontWeight: '700' },
 
-  segmentRow: { flexDirection: 'row', marginBottom: 12 },
-  pill: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginRight: 8 },
+  segmentRow: { flexDirection: 'row', marginBottom: 12, flexWrap: 'wrap' },
+  pill: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginRight: 8, marginBottom: 8 },
   pillActive: { backgroundColor: '#111827' },
   pillInactive: { backgroundColor: '#e5e7eb' },
   pillText: { fontSize: 14, fontWeight: '700' },
